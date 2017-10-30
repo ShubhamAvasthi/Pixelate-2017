@@ -1,0 +1,52 @@
+function [ BB_in,BB_bp,BB_cs ] = BB_bp_cs( highlight )     %recieves a processed binary image with all objects other than the bot highlighted
+highlight=imdilate(highlight,strel('square',50));
+highlight=imerode(highlight,strel('square',50));
+highlight=imerode(highlight,strel('square',50));
+highlight=imdilate(highlight,strel('square',50));
+l=bwlabel(highlight,4);
+st=regionprops(l,'all');
+%imtool(highlight);
+%stB=regionprops(highlight,'BoundingBox');
+%A=st.Area;
+%disp(A);disp(st(2).Area);
+%disp(length(st));
+A_cs=0;
+A_bp=0;
+A_in=0;
+i_cs=0;
+i_bp=0;
+i_in=0;
+for i=1:length(st)
+    %disp(st(i).Area);
+    %disp(st(i).Centroid);
+    %disp(st(i).BoundingBox);
+    if(st(i).Area>A_in)
+        A_in=st(i).Area;
+        i_in=i;
+        if(A_in>A_bp)
+            tempA=A_in;
+            tempi=i_in;
+            A_in=A_bp;
+            i_in=i_bp;
+            A_bp=tempA;
+            i_bp=tempi;
+            if(A_bp>A_cs)
+                tempA=A_bp;
+                tempi=i_bp;
+                A_bp=A_cs;
+                i_bp=i_cs;
+                A_cs=tempA;
+                i_cs=tempi;
+            end
+        end
+    end
+end
+
+%disp(i_bp);
+%disp(i_cs);
+%BB=st.BoundingBox;
+BB_bp=st(i_bp).BoundingBox;
+BB_cs=st(i_cs).BoundingBox;
+BB_in=st(i_in).BoundingBox;
+end
+
